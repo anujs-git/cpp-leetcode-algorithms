@@ -1,0 +1,64 @@
+
+class Solution {
+public:
+   
+    vector<string> shortestSubstrings(vector<string>& arr) {
+        vector<string> ans;
+        map<string,int> mp;
+        for(int i=0;i<arr.size();i++)f(arr[i],mp);
+        for(int i=0;i<arr.size();i++){
+            f2(arr[i],mp);
+            string word=arr[i];
+            vector<string> vt;
+            for(int j=0;j<word.size();j++){
+                string s="";
+                for(int k=j;k<word.size();k++){
+                   s+=word[k];
+                   if(mp[s]==0)vt.push_back(s);
+                }
+            }
+            f(arr[i],mp);
+            sort(vt.begin(),vt.end());
+            if(vt.size()!=0){
+                string x=vt[0];
+                int y=x.size();
+                for(int i=1;i<vt.size();i++){
+                   if(vt[i].size()<y){
+                    y=vt[i].size();
+                    x=vt[i];
+                   }
+                }
+                ans.push_back(x);
+            }
+            else ans.push_back("");
+        }
+        return ans;
+    }
+    void f(string& word,map<string,int>&mp){
+        for(int j=0;j<word.size();j++){
+                string s="";
+                for(int k=j;k<word.size();k++){
+                   s+=word[k];
+                   mp[s]++;
+                }
+        }
+    }
+    void f2(string& word,map<string,int>&mp){
+        for(int j=0;j<word.size();j++){
+                string s="";
+                for(int k=j;k<word.size();k++){
+                   s+=word[k];
+                   mp[s]--;
+                }
+        }
+    }
+    
+};
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie* obj = new Trie();
+ * obj->insert(word);
+ * bool param_2 = obj->search(word);
+ * bool param_3 = obj->startsWith(prefix);
+ */
