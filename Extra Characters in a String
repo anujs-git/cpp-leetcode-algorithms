@@ -1,0 +1,84 @@
+struct TrieNode{
+    TrieNode* child[26];
+    bool isEnd;
+    TrieNode() {
+        for (int i = 0; i < 26; i++)
+            child[i] = nullptr;
+        isEnd = false;
+    }
+};
+
+class Solution {
+public:
+    TrieNode* root;
+    Solution() {
+        root=new TrieNode();
+    }
+    
+    void insert(string word) {
+        TrieNode* root1=root;
+        for(int i=0;i<word.size();i++){
+           int index=word[i]-'a';
+           if(root1->child[index]==nullptr){
+              root1->child[index]=new TrieNode();
+              root1=root1->child[index];
+           }
+           else root1=root1->child[index];
+        }
+        root1->isEnd=true;
+    }
+    
+    bool search(string word) {
+        TrieNode* root1=root;
+        for(int i=0;i<word.size();i++){
+            int idx=word[i]-'a';
+            if(root1->child[idx]==nullptr)return false;
+            root1=root1->child[idx];
+        }
+        return root1->isEnd;
+    }
+    
+    bool startsWith(string prefix) {
+        TrieNode* root1=root;
+        string word=prefix;
+        for(int i=0;i<word.size();i++){
+            int idx=word[i]-'a';
+            if(root1->child[idx]==nullptr)return false;
+            root1=root1->child[idx];
+        }
+        return true;
+    }
+    int minExtraChar(string s, vector<string>& dict) {
+        for(int i=0;i<dict.size();i++){
+            insert(dict[i]);
+        }
+        vector<int> dp(s.size(),-1);
+        int ans=f(s,0,dp);
+        return s.size()-ans;
+    }
+    int f(string& s,int i,vector<int>&dp){
+        if(i==s.size())return 0;
+        if(dp[i]!=-1)return dp[i];
+        int j=i;
+        TrieNode* node=root;
+        int ans=0;
+        ans=max(ans,f(s,i+1,dp));
+        while(j<s.size()&&node->child[s[j]-'a']!=nullptr){
+            node=node->child[s[j]-'a'];
+            j++;
+            if(node->isEnd){
+              ans=max(ans,j-i+f(s,j,dp));
+            }
+        }
+        dp[i]= ans;
+        return ans;
+    }
+};
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie* obj = new Trie();
+ * obj->insert(word);
+ * bool param_2 = obj->search(word);
+ * bool param_3 = obj->startsWith(prefix);
+ */
