@@ -1,0 +1,78 @@
+
+ struct TrieNode{
+    TrieNode* child[26];
+    bool isEnd;
+    int counter;
+    TrieNode(){
+        for(int i=0;i<26;i++)
+          child[i]=nullptr;
+        isEnd=false;
+        counter=0;
+    }
+ };
+class Solution {
+public:
+    TrieNode* root;
+    Solution(){
+      root=new TrieNode();
+    }
+    void insert(string& word){
+        TrieNode* node=root;
+        for(int i=0;i<word.size();i++){
+            int idx=word[i]-'a';
+            if(node->child[idx]==nullptr)
+              node->child[idx]=new TrieNode();
+            node=node->child[idx];
+            node->counter++;
+        }
+        node->isEnd=true;
+    }
+    vector<int> longestCommonPrefix(vector<string>& words, int k) {
+        vector<int> vt;
+        for(int i=0;i<words.size();i++)insert(words[i]);
+        string s1="";string s2="";
+        TrieNode* node=root;
+        int ans=0;
+        dfs(node,0,k,ans,"",s1);
+        decreaseF(s1);
+        //cout<<s1;
+        ans=0;
+        node=root;
+        dfs(node,0,k,ans,"",s2);
+        for(int i=0;i<words.size();i++){
+           string word=words[i];
+           bool check=true;
+           for(int j=0;j<s1.size();j++){
+            if(j<word.size()&&s1[j]==word[j])continue;
+            else check=false;
+           }
+           if(check)vt.push_back(s2.size());
+           else vt.push_back(s1.size());
+        }
+        return vt;
+    }
+    void decreaseF(string& s){
+        TrieNode* node=root;
+        for(int i=0;i<s.size();i++){
+          int idx=s[i]-'a';
+          node->child[idx]->counter--;
+          node=node->child[idx];
+        }
+    }
+    void dfs(TrieNode* node,int depth,int& k,int& ans,string temp,string& s){
+        if(node==nullptr)return;
+        for(int i=0;i<26;i++){
+            if(node->child[i]!=nullptr&&node->child[i]->counter<k){
+                continue;
+            }
+            char ch=i+'a';
+            if(node->child[i]==nullptr)continue;
+            if(depth+1>ans){
+                ans=depth+1;
+                s=temp+ch;
+            }
+            dfs(node->child[i],depth+1,k,ans,temp+ch,s);
+        }
+        
+    }
+};
